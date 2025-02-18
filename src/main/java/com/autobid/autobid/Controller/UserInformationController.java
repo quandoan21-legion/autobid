@@ -7,13 +7,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.NoSuchAlgorithmException;
+
 @RestController
 public class UserInformationController {
     @Autowired
     private UserInformationService userInformationService;
 
     @PostMapping("/register")
-    public users RegisterNewUser(@RequestBody users users){
+    public users RegisterNewUser(@RequestBody users users) throws NoSuchAlgorithmException {
         return userInformationService.registerNewUser(users);
     }
 }
