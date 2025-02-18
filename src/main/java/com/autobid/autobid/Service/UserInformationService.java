@@ -11,6 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserInformationService {
@@ -19,21 +20,40 @@ public class UserInformationService {
     @Autowired
     private UserInformationRepo userInformationRepo;
 
-    public MessageFactory registerNewUser(users users) throws NoSuchAlgorithmException {
-        if (userInformationRepo.findByEmail(users.getEmail()).isPresent() && userInformationRepo.findByUsername(users.getUsername()).isPresent()) {
-            return message.MessageResponse("Username or Email already used", false, List.of());
-        }
+    protected String hashedPassword(String passoword) throws NoSuchAlgorithmException {
         // Get the MessageDigest instance for SHA-256
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
 
         // Update the messageDigest with the password bytes
-        byte[] hashedBytes = messageDigest.digest(users.getPassword().getBytes());
+        byte[] hashedBytes = messageDigest.digest(passoword.getBytes());
+        return Base64.getEncoder().encodeToString(hashedBytes);
+
+    }
+
+    public MessageFactory registerNewUser(users users) throws NoSuchAlgorithmException {
+        if (userInformationRepo.findByEmail(users.getEmail()).isPresent() && userInformationRepo.findByUsername(users.getUsername()).isPresent()) {
+            return message.MessageResponse("Username or Email already used", false, List.of());
+        }
+
 
         // Encode the hashed bytes into a Base64 string
-        users.setPassword(Base64.getEncoder().encodeToString(hashedBytes));
+        users.setPassword(this.hashedPassword(users.getPassword()));
 
         userInformationRepo.save(users);
         return message.MessageResponse("User created", true, List.of(userInformationRepo.save(users)));
     }
 
+    public MessageFactory login(users users) throws NoSuchAlgorithmException {
+        String username = users.getUsername();
+        String hashed_password = this.hashedPassword(users.getPassword());
+
+
+        Optional<users> userOptional = userInformationRepo.findByUsername(username);
+        if (userOptional.isPresent() && userOptional.get().getPassword().equals(hashed_password)) {
+            return message.MessageResponse("Logged In", true, List.of(userOptional.get()));
+        } else {
+            return message.MessageResponse("Invalid username or password", false, List.of());
+        }
+    }
 }
+

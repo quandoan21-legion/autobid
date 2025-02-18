@@ -15,7 +15,9 @@ public class MessageFactory<T> {
         this.success = success;
     }
 
-    public MessageFactory MessageResponse(String message, boolean success, List<T> data) {
+    public MessageFactory MessageResponse(String message, boolean success, List<T> data)
+
+    {
         this.message = message;
         this.success = success;
         this.data = data;

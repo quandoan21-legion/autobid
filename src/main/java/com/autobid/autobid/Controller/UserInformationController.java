@@ -19,4 +19,9 @@ public class UserInformationController {
     public MessageFactory RegisterNewUser(@RequestBody users users) throws NoSuchAlgorithmException {
         return userInformationService.registerNewUser(users);
     }
+
+    @PostMapping("/login")
+    public  MessageFactory Login(@RequestBody users users) throws  NoSuchAlgorithmException {
+        return userInformationService.login(users);
+    }
 }
