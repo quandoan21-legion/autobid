@@ -1,6 +1,7 @@
 package com.autobid.autobid.Controller;
 
 import com.autobid.autobid.Entity.users;
+import com.autobid.autobid.Factory.MessageFactory;
 import com.autobid.autobid.Service.UserInformationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +16,7 @@ public class UserInformationController {
     private UserInformationService userInformationService;
 
     @PostMapping("/register")
-    public users RegisterNewUser(@RequestBody users users) throws NoSuchAlgorithmException {
+    public MessageFactory RegisterNewUser(@RequestBody users users) throws NoSuchAlgorithmException {
         return userInformationService.registerNewUser(users);
     }
 }
