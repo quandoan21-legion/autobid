@@ -30,12 +30,19 @@ public class UserInformationService {
 
     }
 
+    public MessageFactory getAccountInformation(Integer user_id) {
+        Optional<users> userOptional = userInformationRepo.findById(user_id);
+        if (userOptional.isPresent()) {
+            return message.MessageResponse("This is your account info", true, List.of(userOptional.get()));
+        } else {
+            return message.MessageResponse("User not found", false, List.of());
+        }
+    }
+
     public MessageFactory registerNewUser(users users) throws NoSuchAlgorithmException {
         if (userInformationRepo.findByEmail(users.getEmail()).isPresent() && userInformationRepo.findByUsername(users.getUsername()).isPresent()) {
             return message.MessageResponse("Username or Email already used", false, List.of());
         }
-
-
         // Encode the hashed bytes into a Base64 string
         users.setPassword(this.hashedPassword(users.getPassword()));
 

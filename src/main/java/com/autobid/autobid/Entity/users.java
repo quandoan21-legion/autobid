@@ -3,6 +3,7 @@ package com.autobid.autobid.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import javax.swing.*;
 import java.util.Date;
 import java.util.List;
 
@@ -14,8 +15,7 @@ public class users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-
-
+    
     @Column(name = "username", unique = true)
     private String username;
 
@@ -31,6 +31,9 @@ public class users {
 
     @Column(name = "balance")
     private double balance;
+
+    @Column(name = "image_url")
+    private String image_url;
 
 //    @OneToMany(mappedBy = "f_user_id", fetch = FetchType.EAGER)
 //    private List<car_information> carInformationList;
