@@ -50,6 +50,20 @@ public class UserInformationService {
         return message.MessageResponse("User created", true, List.of(userInformationRepo.save(users)));
     }
 
+    public MessageFactory editAccountInformation(users updatedUser) throws NoSuchAlgorithmException {
+        Optional<users> userOptional = userInformationRepo.findById(updatedUser.getId());
+        if (userOptional.isPresent()) {
+            users existingUser = userOptional.get();
+            existingUser.setEmail(updatedUser.getEmail());
+            existingUser.setPassword(this.hashedPassword(updatedUser.getPassword()));
+            existingUser.setImage_url(updatedUser.getImage_url());
+            userInformationRepo.save(existingUser);
+            return message.MessageResponse("Account information updated", true, List.of(existingUser));
+        } else {
+            return message.MessageResponse("User not found", false, List.of());
+        }
+    }
+
     public MessageFactory login(users users) throws NoSuchAlgorithmException {
         String username = users.getUsername();
         String hashed_password = this.hashedPassword(users.getPassword());

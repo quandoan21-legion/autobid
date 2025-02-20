@@ -27,4 +27,9 @@ public class UserInformationController {
     public  MessageFactory Login(@RequestBody users users) throws  NoSuchAlgorithmException {
         return userInformationService.login(users);
     }
+
+    @PutMapping("/update-account")
+    public MessageFactory UpdateAccount(@RequestBody users users) throws  NoSuchAlgorithmException{
+        return userInformationService.editAccountInformation(users);
+    }
 }
