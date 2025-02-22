@@ -13,6 +13,7 @@ public class CarInformationDTO {
     private String description;
     private Integer startingBid;
     private Date createdAt;
-
+    private Date startTime;
+    private Date endTime;
     // Getters and setters
 }

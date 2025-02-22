@@ -38,6 +38,8 @@ public class CarInformationService {
         carInformation.setDescription(carInformationDTO.getDescription());
         carInformation.setStarting_bid(carInformationDTO.getStartingBid());
         carInformation.setCreated_at(carInformationDTO.getCreatedAt());
+        carInformation.setStart_time(carInformationDTO.getStartTime());
+        carInformation.setEnd_time(carInformationDTO.getEndTime());
         car_information savedCarInformation = carInformationRepo.save(carInformation);
 
         return message.MessageResponse("Create new listings successfully", true, List.of(savedCarInformation));

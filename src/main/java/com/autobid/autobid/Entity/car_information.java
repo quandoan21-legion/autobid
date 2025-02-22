@@ -32,12 +32,15 @@ public class car_information {
     @Column(name = "image_id", insertable = false, updatable = false)
     private Integer image_id;
     @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date created_at;
     @Column(name = "status")
     private boolean status;
     @Column(name = "start_time")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date start_time;
     @Column(name = "end_time")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date end_time;
 
     @ManyToOne

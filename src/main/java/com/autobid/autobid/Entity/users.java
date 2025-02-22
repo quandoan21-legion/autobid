@@ -19,8 +19,8 @@ public class users {
     @Column(name = "username", unique = true)
     private String username;
 
-    @Column(name = "is_admin", columnDefinition = "boolean default false")
-    private boolean is_admin;
+    @Column(name = "admin", columnDefinition = "boolean default false")
+    private boolean admin;
 
     @Column(name = "password")
     private String password;
