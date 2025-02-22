@@ -15,8 +15,8 @@ public class car_information {
     @Column(name = "id")
     private Integer id;
     @Column(name = "user_id", insertable = false, updatable = false)
-    private Integer user_id;
-    @Column(name = "order_id", insertable = false, updatable = false)
+//    private Integer user_id;
+//    @Column(name = "order_id", insertable = false, updatable = false)
     private Integer order_id;
     @Column(name = "year_model")
     private Integer year_model;
@@ -33,14 +33,16 @@ public class car_information {
     private Integer image_id;
     @Column(name = "created_at")
     private Date created_at;
+    @Column(name = "status")
+    private  boolean status;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private users f_user_id;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
-    private List<orders> f_order_id;
+//    @OneToMany(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "order_id", referencedColumnName = "id")
+//    private List<orders> f_order_id;
 
     @OneToMany
     @JoinColumn(name = "image_id", referencedColumnName = "id")

@@ -15,7 +15,7 @@ public class CarInformationController {
     @Autowired
     private CarInformationService carInformationService;
 
-    @PostMapping("/addCarInfo")
+    @PostMapping("/listings/add-listing")
     public car_information postCarDetails(@RequestBody car_information car_information) {
         return carInformationService.saveDetails(car_information);
     }

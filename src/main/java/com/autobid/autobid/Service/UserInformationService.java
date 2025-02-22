@@ -63,11 +63,9 @@ public class UserInformationService {
             return message.MessageResponse("User not found", false, List.of());
         }
     }
-
     public MessageFactory login(users users) throws NoSuchAlgorithmException {
         String username = users.getUsername();
         String hashed_password = this.hashedPassword(users.getPassword());
-
 
         Optional<users> userOptional = userInformationRepo.findByUsername(username);
         if (userOptional.isPresent() && userOptional.get().getPassword().equals(hashed_password)) {
