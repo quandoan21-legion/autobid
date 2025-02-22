@@ -20,10 +20,10 @@ public class bids {
     private double bid_amount;
     @Column(name = "bid_time")
     private Date bid_time;
-
-    @ManyToOne
-    @JoinColumn(name = "auction_id", referencedColumnName = "id")
-    private auctions f_auction_id;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "auction_id", referencedColumnName = "id")
+//    private auctions f_auction_id;
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")

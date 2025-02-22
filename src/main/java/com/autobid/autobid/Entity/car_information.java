@@ -12,12 +12,12 @@ import java.util.List;
 public class car_information {
 
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "user_id", insertable = false, updatable = false)
+    //    @Column(name = "user_id", insertable = false, updatable = false)
 //    private Integer user_id;
 //    @Column(name = "order_id", insertable = false, updatable = false)
-    private Integer order_id;
+//    private Integer order_id;
     @Column(name = "year_model")
     private Integer year_model;
     @Column(name = "make")
@@ -34,7 +34,11 @@ public class car_information {
     @Column(name = "created_at")
     private Date created_at;
     @Column(name = "status")
-    private  boolean status;
+    private boolean status;
+    @Column(name = "start_time")
+    private Date start_time;
+    @Column(name = "end_time")
+    private Date end_time;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")

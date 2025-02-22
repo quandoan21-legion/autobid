@@ -15,9 +15,12 @@ public class users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    
+
     @Column(name = "username", unique = true)
     private String username;
+
+    @Column(name = "is_admin", columnDefinition = "boolean default false")
+    private boolean is_admin;
 
     @Column(name = "password")
     private String password;

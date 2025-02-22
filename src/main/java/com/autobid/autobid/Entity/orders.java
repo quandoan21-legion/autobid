@@ -27,9 +27,9 @@ public class orders {
      @ToString.Exclude
     private users f_user_id;
 
-    @OneToOne
-    @JoinColumn(name = "auction_id", referencedColumnName = "id")
-    private auctions f_auction_id;
-
+//    @OneToOne
+//    @JoinColumn(name = "auction_id", referencedColumnName = "id")
+//    private auctions f_auction_id;
+//
 
 }

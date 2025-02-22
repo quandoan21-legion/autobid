@@ -25,7 +25,7 @@ public class comments {
     @JoinColumn(name="car_id", referencedColumnName = "id")
     private car_information f_car_information_id;
 
-    @ManyToOne
-    @JoinColumn(name = "auction_id", referencedColumnName = "id")
-    private auctions f_auction_id;
+//    @ManyToOne
+//    @JoinColumn(name = "auction_id", referencedColumnName = "id")
+//    private auctions f_auction_id;
 }

@@ -1,12 +1,12 @@
 package com.autobid.autobid.Controller;
 
+import com.autobid.autobid.DTO.CarInformationDTO;
 import com.autobid.autobid.Entity.car_information;
+import com.autobid.autobid.Factory.MessageFactory;
 import com.autobid.autobid.Service.CarInformationService;
+import org.aspectj.bridge.IMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,12 +16,17 @@ public class CarInformationController {
     private CarInformationService carInformationService;
 
     @PostMapping("/listings/add-listing")
-    public car_information postCarDetails(@RequestBody car_information car_information) {
-        return carInformationService.saveDetails(car_information);
+    public MessageFactory postCarDetails(@RequestBody CarInformationDTO carInformationDTO) {
+        return carInformationService.saveDetails(carInformationDTO);
     }
 
-    @GetMapping("/allCarInfo")
-    public List<car_information> getCarsDetails() {
+    @GetMapping("/listings")
+    public MessageFactory getAllCars() {
         return carInformationService.getAllCars();
+    }
+
+    @GetMapping("/listings/{id}")
+    public MessageFactory getCarDetail(@PathVariable Integer id) {
+        return carInformationService.getCarDetailById(id);
     }
 }
