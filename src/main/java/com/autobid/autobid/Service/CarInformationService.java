@@ -9,6 +9,7 @@ import com.autobid.autobid.Repository.UserInformationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -29,14 +30,14 @@ public class CarInformationService {
 
         car_information carInformation = new car_information();
         carInformation.setF_user_id(user);
-        carInformation.setYear_model(carInformationDTO.getYearModel());
+        carInformation.setYear_model(carInformationDTO.getYear_model());
         carInformation.setMake(carInformationDTO.getMake());
         carInformation.setModel(carInformationDTO.getModel());
         carInformation.setDescription(carInformationDTO.getDescription());
-        carInformation.setStarting_bid(carInformationDTO.getStartingBid());
-        carInformation.setCreated_at(carInformationDTO.getCreatedAt());
-        carInformation.setStart_time(carInformationDTO.getStartTime());
-        carInformation.setEnd_time(carInformationDTO.getEndTime());
+        carInformation.setStarting_bid(carInformationDTO.getStarting_bid());
+        carInformation.setCreated_at(carInformationDTO.getCreated_at());
+        carInformation.setStart_time(carInformationDTO.getStart_time());
+        carInformation.setEnd_time(carInformationDTO.getEnd_time());
         car_information savedCarInformation = carInformationRepo.save(carInformation);
 
         return message.MessageResponse("Create new listings successfully", true, List.of(savedCarInformation));
@@ -51,6 +52,8 @@ public class CarInformationService {
     }
 
     public MessageFactory getAllCars() {
-        return message.MessageResponse("This is all car listings", true, List.of(carInformationRepo.findAll()));
+        Date currentDate = new Date();
+        List<car_information> cars = carInformationRepo.findAllByEndTimeAfter(currentDate);
+        return message.MessageResponse("This is all car listings", true, List.of(cars));
     }
 }
