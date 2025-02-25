@@ -11,4 +11,7 @@ import java.util.List;
 public interface CarInformationRepo extends JpaRepository<car_information, Integer> {
     @Query("SELECT c FROM car_information c WHERE c.end_time > :currentDate")
     List<car_information> findAllByEndTimeAfter(Date currentDate);
+
+    @Query("SELECT c FROM car_information c WHERE c.end_time <= :currentDate")
+    List<car_information> findAllByEndTimeBeforeOrEqual(Date currentDate);
 }

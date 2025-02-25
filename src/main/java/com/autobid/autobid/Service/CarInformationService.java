@@ -56,4 +56,10 @@ public class CarInformationService {
         List<car_information> cars = carInformationRepo.findAllByEndTimeAfter(currentDate);
         return message.MessageResponse("This is all car listings", true, List.of(cars));
     }
+
+    public MessageFactory getEndedCars() {
+        Date currentDate = new Date();
+        List<car_information> cars = carInformationRepo.findAllByEndTimeBeforeOrEqual(currentDate);
+        return message.MessageResponse("This is all ended car listings", true, List.of(cars));
+    }
 }
