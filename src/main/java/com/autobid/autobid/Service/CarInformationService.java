@@ -1,4 +1,3 @@
-// File: src/main/java/com/autobid/autobid/Service/CarInformationService.java
 package com.autobid.autobid.Service;
 
 import com.autobid.autobid.DTO.CarInformationDTO;
@@ -9,10 +8,8 @@ import com.autobid.autobid.Repository.CarInformationRepo;
 import com.autobid.autobid.Repository.UserInformationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
-
 
 @Service
 public class CarInformationService {

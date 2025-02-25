@@ -1,9 +1,9 @@
-// File: src/main/java/com/autobid/autobid/DTO/CarInformationDTO.java
 package com.autobid.autobid.DTO;
 
 import lombok.Data;
 
 import java.util.Date;
+
 @Data
 public class CarInformationDTO {
     private Integer user;
@@ -15,5 +15,4 @@ public class CarInformationDTO {
     private Date createdAt;
     private Date startTime;
     private Date endTime;
-    // Getters and setters
 }
