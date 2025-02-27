@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 
-
 @Service
 public class UserInformationService {
     MessageFactory message = new MessageFactory();
@@ -31,6 +30,14 @@ public class UserInformationService {
         byte[] hashedBytes = messageDigest.digest(passoword.getBytes());
         return Base64.getEncoder().encodeToString(hashedBytes);
 
+    }
+
+    public void deductUserBalance(Integer userId, double amount) {
+        users user = userInformationRepo.findById(userId).orElse(null);
+        if (user != null) {
+            user.deductBalance(amount);
+            userInformationRepo.save(user);
+        }
     }
 
     public MessageFactory getAccountInformation(Integer user_id) {
@@ -66,6 +73,7 @@ public class UserInformationService {
             return message.MessageResponse("User not found", false, List.of());
         }
     }
+
     public MessageFactory login(users users) throws NoSuchAlgorithmException {
         String username = users.getUsername();
         String hashed_password = this.hashedPassword(users.getPassword());

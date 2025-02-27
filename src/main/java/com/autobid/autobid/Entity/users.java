@@ -38,6 +38,10 @@ public class users {
     @Column(name = "image_url")
     private String image_url;
 
+    public void deductBalance(double amount) {
+        this.balance -= amount;
+    }
+
 //    @OneToMany(mappedBy = "f_user_id", fetch = FetchType.EAGER)
 //    private List<car_information> carInformationList;
 }
