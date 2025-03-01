@@ -35,7 +35,7 @@ public class CarInformationService {
         carInformation.setModel(carInformationDTO.getModel());
         carInformation.setDescription(carInformationDTO.getDescription());
         carInformation.setStarting_bid(carInformationDTO.getStarting_bid());
-        carInformation.setCreated_at(carInformationDTO.getCreated_at());
+        carInformation.setCreated_at(new Date());
         carInformation.setStatus(carInformationDTO.isStatus());
         carInformation.setStart_time(carInformationDTO.getStart_time());
         carInformation.setEnd_time(carInformationDTO.getEnd_time());

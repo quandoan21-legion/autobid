@@ -4,9 +4,8 @@ import com.autobid.autobid.Entity.users;
 import com.autobid.autobid.Factory.MessageFactory;
 import com.autobid.autobid.Repository.UserInformationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

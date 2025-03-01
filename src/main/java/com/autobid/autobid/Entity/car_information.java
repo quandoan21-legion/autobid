@@ -16,7 +16,7 @@ public class car_information {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "year_model")
+    @Column(name = "year")
     private Integer year_model;
 
     @Column(name = "make")
