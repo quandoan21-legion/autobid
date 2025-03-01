@@ -19,6 +19,9 @@ public class users {
     @Column(name = "username", unique = true)
     private String username;
 
+    @Column(name = "bio")
+    private String bio;
+
     @Column(name = "admin", columnDefinition = "boolean default false")
     private boolean admin;
 

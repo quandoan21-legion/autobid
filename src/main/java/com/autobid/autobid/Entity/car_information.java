@@ -32,9 +32,6 @@ public class car_information {
     @Column(name = "starting_bid")
     private Integer starting_bid;
 
-    @Column(name = "image_id", insertable = false, updatable = false)
-    private Integer image_id;
-
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date created_at;
@@ -54,7 +51,52 @@ public class car_information {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private users f_user_id;
 
-    @OneToMany
-    @JoinColumn(name = "image_id", referencedColumnName = "id")
-    private List<car_images> f_image_id;
+    @Column(name = "VIN")
+    private String VIN;
+
+    @Column(name = "mileage")
+    private Integer mileage;
+
+    @Column(name = "interial_color")
+    private String interial_color;
+
+    @Column(name = "exterior_color")
+    private String exterior_color;
+
+    @Column(name = "engine")
+    private String engine;
+
+    @Column(name = "drive_type")
+    private String drive_type;
+
+    @Column(name = "body_style")
+    private String body_style;
+
+    @Column(name = "doors")
+    private Integer doors;
+
+    @Column(name = "`condition`")
+    private String condition;
+
+    @Column(name = "price")
+    private Integer price;
+
+    @Column(name = "location")
+    private String location;
+
+    @Column(name = "transmission")
+    private String transmission;
+
+    @Column(name = "fuel_type")
+    private String fuel_type;
+
+    @Column(name = "equipment")
+    private String equipment;
+
+    @Column(name = "flaws")
+    private String flaws;
+
+    @Column(name = "modifications")
+    private String modifications;
+
 }

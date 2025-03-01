@@ -64,9 +64,18 @@ public class UserInformationService {
         Optional<users> userOptional = userInformationRepo.findById(updatedUser.getId());
         if (userOptional.isPresent()) {
             users existingUser = userOptional.get();
-            existingUser.setEmail(updatedUser.getEmail());
-            existingUser.setPassword(this.hashedPassword(updatedUser.getPassword()));
-            existingUser.setImage_url(updatedUser.getImage_url());
+            if (updatedUser.getEmail() != null) {
+                existingUser.setEmail(updatedUser.getEmail());
+            }
+            if (updatedUser.getPassword() != null) {
+                existingUser.setPassword(this.hashedPassword(updatedUser.getPassword()));
+            }
+            if (updatedUser.getImage_url() != null) {
+                existingUser.setImage_url(updatedUser.getImage_url());
+            }
+            if (updatedUser.getUsername() != null) {
+                existingUser.setUsername(updatedUser.getUsername());
+            }
             userInformationRepo.save(existingUser);
             return message.MessageResponse("Account information updated", true, List.of(existingUser));
         } else {
