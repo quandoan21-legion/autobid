@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,7 +56,7 @@ public class UserInformationService {
         }
         // Encode the hashed bytes into a Base64 string
         users.setPassword(this.hashedPassword(users.getPassword()));
-
+        users.setCreated_at(new Date());
         userInformationRepo.save(users);
         return message.MessageResponse("User created", true, List.of(userInformationRepo.save(users)));
     }
