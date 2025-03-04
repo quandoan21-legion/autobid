@@ -1,9 +1,11 @@
 package com.autobid.autobid.Service;
 
 import com.autobid.autobid.DTO.CarInformationDTO;
+import com.autobid.autobid.Entity.car_images;
 import com.autobid.autobid.Entity.car_information;
 import com.autobid.autobid.Entity.users;
 import com.autobid.autobid.Factory.MessageFactory;
+import com.autobid.autobid.Repository.CarImagesRepo;
 import com.autobid.autobid.Repository.CarInformationRepo;
 import com.autobid.autobid.Repository.UserInformationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +13,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CarInformationService {
     @Autowired
     private CarInformationRepo carInformationRepo;
 
+    @Autowired
+    private CarImagesRepo carImagesRepo;
     @Autowired
     private UserInformationRepo userInformationRepo;
 
@@ -57,6 +62,48 @@ public class CarInformationService {
         carInformation.setEquipment(carInformationDTO.getEquipment());
         car_information savedCarInformation = carInformationRepo.save(carInformation);
 
+        if (carInformationDTO.getImages() != null) {
+            for (String imageUrl : carInformationDTO.getImages()) {
+                car_images carImage = new car_images();
+                carImage.setCar(savedCarInformation.getId());
+                carImage.setImage(imageUrl);
+                carImagesRepo.save(carImage);
+            }
+        }
+
+        List<String> images = carImagesRepo.findByCar(savedCarInformation.getId())
+                .stream()
+                .map(car_images::getImage)
+                .collect(Collectors.toList());
+
+        CarInformationDTO responseDTO = new CarInformationDTO();
+        responseDTO.setUser(savedCarInformation.getF_user_id().getId());
+        responseDTO.setYear_model(savedCarInformation.getYear_model());
+        responseDTO.setMake(savedCarInformation.getMake());
+        responseDTO.setModel(savedCarInformation.getModel());
+        responseDTO.setDescription(savedCarInformation.getDescription());
+        responseDTO.setStarting_bid(savedCarInformation.getStarting_bid());
+        responseDTO.setCreated_at(savedCarInformation.getCreated_at());
+        responseDTO.setStatus(savedCarInformation.isStatus());
+        responseDTO.setStart_time(savedCarInformation.getStart_time());
+        responseDTO.setEnd_time(savedCarInformation.getEnd_time());
+        responseDTO.setVIN(savedCarInformation.getVIN());
+        responseDTO.setMileage(savedCarInformation.getMileage());
+        responseDTO.setInterial_color(savedCarInformation.getInterial_color());
+        responseDTO.setExterior_color(savedCarInformation.getExterior_color());
+        responseDTO.setEngine(savedCarInformation.getEngine());
+        responseDTO.setDrive_type(savedCarInformation.getDrive_type());
+        responseDTO.setBody_style(savedCarInformation.getBody_style());
+        responseDTO.setDoors(savedCarInformation.getDoors());
+        responseDTO.setCondition(savedCarInformation.getCondition());
+        responseDTO.setPrice(savedCarInformation.getPrice());
+        responseDTO.setLocation(savedCarInformation.getLocation());
+        responseDTO.setTransmission(savedCarInformation.getTransmission());
+        responseDTO.setFuel_type(savedCarInformation.getFuel_type());
+        responseDTO.setModifications(savedCarInformation.getModifications());
+        responseDTO.setFlaws(savedCarInformation.getFlaws());
+        responseDTO.setEquipment(savedCarInformation.getEquipment());
+        responseDTO.setImages(images);
         return message.MessageResponse("Create new listings successfully", true, List.of(savedCarInformation));
     }
 

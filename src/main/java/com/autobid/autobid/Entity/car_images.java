@@ -8,10 +8,11 @@ import lombok.Data;
 @Data
 public class car_images {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @Column(name = "car_id")
-    private int car_id;
+    @Column(name = "car")
+    private int car;
     @Column(name = "image")
     private String image;
 }
