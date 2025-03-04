@@ -22,6 +22,7 @@ public class CarInformationService {
 
     @Autowired
     private CarImagesRepo carImagesRepo;
+
     @Autowired
     private UserInformationRepo userInformationRepo;
 
@@ -104,7 +105,8 @@ public class CarInformationService {
         responseDTO.setFlaws(savedCarInformation.getFlaws());
         responseDTO.setEquipment(savedCarInformation.getEquipment());
         responseDTO.setImages(images);
-        return message.MessageResponse("Create new listings successfully", true, List.of(savedCarInformation));
+
+        return message.MessageResponse("Create new listings successfully", true, List.of(responseDTO));
     }
 
     public MessageFactory updateCarDetails(Integer id, CarInformationDTO carInformationDTO) {
@@ -194,7 +196,41 @@ public class CarInformationService {
 
         car_information updatedCarInformation = carInformationRepo.save(carInformation);
 
-        return message.MessageResponse("Car listing updated successfully", true, List.of(updatedCarInformation));
+        List<String> images = carImagesRepo.findByCar(updatedCarInformation.getId())
+                .stream()
+                .map(car_images::getImage)
+                .collect(Collectors.toList());
+
+        CarInformationDTO responseDTO = new CarInformationDTO();
+        responseDTO.setUser(updatedCarInformation.getF_user_id().getId());
+        responseDTO.setYear_model(updatedCarInformation.getYear_model());
+        responseDTO.setMake(updatedCarInformation.getMake());
+        responseDTO.setModel(updatedCarInformation.getModel());
+        responseDTO.setDescription(updatedCarInformation.getDescription());
+        responseDTO.setStarting_bid(updatedCarInformation.getStarting_bid());
+        responseDTO.setCreated_at(updatedCarInformation.getCreated_at());
+        responseDTO.setStatus(updatedCarInformation.isStatus());
+        responseDTO.setStart_time(updatedCarInformation.getStart_time());
+        responseDTO.setEnd_time(updatedCarInformation.getEnd_time());
+        responseDTO.setVIN(updatedCarInformation.getVIN());
+        responseDTO.setMileage(updatedCarInformation.getMileage());
+        responseDTO.setInterial_color(updatedCarInformation.getInterial_color());
+        responseDTO.setExterior_color(updatedCarInformation.getExterior_color());
+        responseDTO.setEngine(updatedCarInformation.getEngine());
+        responseDTO.setDrive_type(updatedCarInformation.getDrive_type());
+        responseDTO.setBody_style(updatedCarInformation.getBody_style());
+        responseDTO.setDoors(updatedCarInformation.getDoors());
+        responseDTO.setCondition(updatedCarInformation.getCondition());
+        responseDTO.setPrice(updatedCarInformation.getPrice());
+        responseDTO.setLocation(updatedCarInformation.getLocation());
+        responseDTO.setTransmission(updatedCarInformation.getTransmission());
+        responseDTO.setFuel_type(updatedCarInformation.getFuel_type());
+        responseDTO.setModifications(updatedCarInformation.getModifications());
+        responseDTO.setFlaws(updatedCarInformation.getFlaws());
+        responseDTO.setEquipment(updatedCarInformation.getEquipment());
+        responseDTO.setImages(images);
+
+        return message.MessageResponse("Car listing updated successfully", true, List.of(responseDTO));
     }
 
     public MessageFactory getCarDetailById(Integer id) {
@@ -202,7 +238,42 @@ public class CarInformationService {
         if (car_detail == null) {
             return message.MessageResponse("Invalid car id", false, List.of());
         }
-        return message.MessageResponse("This is your car detail", true, List.of(car_detail));
+
+        List<String> images = carImagesRepo.findByCar(car_detail.getId())
+                .stream()
+                .map(car_images::getImage)
+                .collect(Collectors.toList());
+
+        CarInformationDTO responseDTO = new CarInformationDTO();
+        responseDTO.setUser(car_detail.getF_user_id().getId());
+        responseDTO.setYear_model(car_detail.getYear_model());
+        responseDTO.setMake(car_detail.getMake());
+        responseDTO.setModel(car_detail.getModel());
+        responseDTO.setDescription(car_detail.getDescription());
+        responseDTO.setStarting_bid(car_detail.getStarting_bid());
+        responseDTO.setCreated_at(car_detail.getCreated_at());
+        responseDTO.setStatus(car_detail.isStatus());
+        responseDTO.setStart_time(car_detail.getStart_time());
+        responseDTO.setEnd_time(car_detail.getEnd_time());
+        responseDTO.setVIN(car_detail.getVIN());
+        responseDTO.setMileage(car_detail.getMileage());
+        responseDTO.setInterial_color(car_detail.getInterial_color());
+        responseDTO.setExterior_color(car_detail.getExterior_color());
+        responseDTO.setEngine(car_detail.getEngine());
+        responseDTO.setDrive_type(car_detail.getDrive_type());
+        responseDTO.setBody_style(car_detail.getBody_style());
+        responseDTO.setDoors(car_detail.getDoors());
+        responseDTO.setCondition(car_detail.getCondition());
+        responseDTO.setPrice(car_detail.getPrice());
+        responseDTO.setLocation(car_detail.getLocation());
+        responseDTO.setTransmission(car_detail.getTransmission());
+        responseDTO.setFuel_type(car_detail.getFuel_type());
+        responseDTO.setModifications(car_detail.getModifications());
+        responseDTO.setFlaws(car_detail.getFlaws());
+        responseDTO.setEquipment(car_detail.getEquipment());
+        responseDTO.setImages(images);
+
+        return message.MessageResponse("This is your car detail", true, List.of(responseDTO));
     }
 
     public MessageFactory getAllCars() {
