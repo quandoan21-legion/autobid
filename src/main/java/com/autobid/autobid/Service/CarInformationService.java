@@ -11,7 +11,8 @@ import com.autobid.autobid.Repository.CarInformationRepo;
 import com.autobid.autobid.Repository.UserInformationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-       
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -116,17 +117,16 @@ public class CarInformationService {
         return message.MessageResponse("Create new listings successfully", true, List.of(responseDTO));
     }
 
+    @Transactional
     public MessageFactory updateCarDetails(Integer id, CarInformationDTO carInformationDTO) {
         car_information carInformation = carInformationRepo.findById(id).orElse(null);
         if (carInformation == null) {
             return message.MessageResponse("Invalid car ID", false, List.of());
         }
-
         users user = userInformationRepo.findById(carInformationDTO.getUser()).orElse(null);
         if (user == null) {
             return message.MessageResponse("Invalid User ID", false, List.of());
         }
-
         if (carInformationDTO.getYear_model() != null) {
             carInformation.setYear_model(carInformationDTO.getYear_model());
         }
@@ -200,7 +200,17 @@ public class CarInformationService {
         if (carInformationDTO.getEquipment() != null) {
             carInformation.setEquipment(carInformationDTO.getEquipment());
         }
-
+        if (carInformationDTO.getImages() != null) {
+            // Delete existing images in a transaction
+            carImagesRepo.deleteByCar(carInformation.getId());
+            // Save new images
+            for (String imageUrl : carInformationDTO.getImages()) {
+                car_images carImage = new car_images();
+                carImage.setCar(carInformation.getId());
+                carImage.setImage(imageUrl);
+                carImagesRepo.save(carImage);
+            }
+        }
         car_information updatedCarInformation = carInformationRepo.save(carInformation);
         CarInformationDTO responseDTO = convertToDTO(updatedCarInformation);
         return message.MessageResponse("Car listing updated successfully", true, List.of(responseDTO));
