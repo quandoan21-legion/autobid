@@ -1,10 +1,12 @@
 package com.autobid.autobid.Service;
 
+
+import com.autobid.autobid.Entity.Transaction;
 import com.autobid.autobid.Entity.users;
 import com.autobid.autobid.Factory.MessageFactory;
+import com.autobid.autobid.Repository.TransactionRepo;
 import com.autobid.autobid.Repository.UserInformationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
@@ -15,10 +17,14 @@ import java.util.List;
 import java.util.Optional;
 
 
+
+
 @Service
 public class UserInformationService {
     MessageFactory message = new MessageFactory();
 
+    @Autowired
+    private TransactionRepo transactionRepo;
     @Autowired
     private UserInformationRepo userInformationRepo;
 
@@ -59,6 +65,51 @@ public class UserInformationService {
         userInformationRepo.save(users);
         return message.MessageResponse("User created", true, List.of(userInformationRepo.save(users)));
     }
+
+    public MessageFactory withdraw(Integer userId, double amount) {
+        if (amount <= 0) {
+            return message.MessageResponse("Amount must be greater than 0", false, List.of());
+        }
+
+        users user = userInformationRepo.findById(userId).orElse(null);
+        if (user != null && user.getBalance() >= amount) {
+            user.deductBalance(amount);
+            userInformationRepo.save(user);
+
+            Transaction transaction = new Transaction();
+            transaction.setUserId(userId);
+            transaction.setTransactionType("withdraw");
+            transaction.setAmount(amount);
+            transactionRepo.save(transaction);
+
+            return message.MessageResponse("Withdrawal successful", true, List.of(user));
+        } else {
+            return message.MessageResponse("Insufficient balance or user not found", false, List.of());
+        }
+    }
+
+    public MessageFactory deposit(Integer userId, double amount) {
+        if (amount <= 0) {
+            return message.MessageResponse("Amount must be greater than 0", false, List.of());
+        }
+
+        users user = userInformationRepo.findById(userId).orElse(null);
+        if (user != null) {
+            user.setBalance(user.getBalance() + amount);
+            userInformationRepo.save(user);
+
+            Transaction transaction = new Transaction();
+            transaction.setUserId(userId);
+            transaction.setTransactionType("deposit");
+            transaction.setAmount(amount);
+            transactionRepo.save(transaction);
+
+            return message.MessageResponse("Deposit successful", true, List.of(user));
+        } else {
+            return message.MessageResponse("User not found", false, List.of());
+        }
+    }
+
 
     public MessageFactory editAccountInformation(users updatedUser) throws NoSuchAlgorithmException {
         Optional<users> userOptional = userInformationRepo.findById(updatedUser.getId());

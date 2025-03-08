@@ -13,6 +13,16 @@ public class UserInformationController {
     @Autowired
     private UserInformationService userInformationService;
 
+    @PostMapping("/withdraw")
+    public MessageFactory withdraw(@RequestBody WithdrawDepositRequest request) {
+        return userInformationService.withdraw(request.getUserId(), request.getAmount());
+    }
+
+    @PostMapping("/deposit")
+    public MessageFactory deposit(@RequestBody WithdrawDepositRequest request) {
+        return userInformationService.deposit(request.getUserId(), request.getAmount());
+    }
+
     @GetMapping("/account")
     public MessageFactory GetAccountInformation(@RequestParam("user_id") Integer user_id){
         return userInformationService.getAccountInformation(user_id);
