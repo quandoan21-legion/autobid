@@ -30,45 +30,7 @@ public class CarInformationService {
 
     private final MessageFactory message = new MessageFactory();
 
-    private CarInformationDTO convertToDTO(car_information car) {
-        List<String> images = carImagesRepo.findByCar(car.getId())
-                .stream()
-                .map(car_images::getImage)
-                .collect(Collectors.toList());
-
-        CarInformationDTO carDTO = new CarInformationDTO();
-        carDTO.setId(car.getId()); // Set the car ID
-        carDTO.setUser(car.getF_user_id().getId());
-        carDTO.setYear_model(car.getYear_model());
-        carDTO.setMake(car.getMake());
-        carDTO.setModel(car.getModel());
-        carDTO.setDescription(car.getDescription());
-        carDTO.setStarting_bid(car.getStarting_bid());
-        carDTO.setCreated_at(car.getCreated_at());
-        carDTO.setStatus(car.isStatus());
-        carDTO.setStart_time(car.getStart_time());
-        carDTO.setEnd_time(car.getEnd_time());
-        carDTO.setVIN(car.getVIN());
-        carDTO.setMileage(car.getMileage());
-        carDTO.setInterial_color(car.getInterial_color());
-        carDTO.setExterior_color(car.getExterior_color());
-        carDTO.setEngine(car.getEngine());
-        carDTO.setDrive_type(car.getDrive_type());
-        carDTO.setBody_style(car.getBody_style());
-        carDTO.setDoors(car.getDoors());
-        carDTO.setCondition(car.getCondition());
-        carDTO.setPrice(car.getPrice());
-        carDTO.setLocation(car.getLocation());
-        carDTO.setTransmission(car.getTransmission());
-        carDTO.setFuel_type(car.getFuel_type());
-        carDTO.setModifications(car.getModifications());
-        carDTO.setFlaws(car.getFlaws());
-        carDTO.setEquipment(car.getEquipment());
-        carDTO.setImages(images);
-
-        return carDTO;
-    }
-
+    @Transactional
     public MessageFactory saveDetails(CarInformationDTO carInformationDTO) {
         users user = userInformationRepo.findById(carInformationDTO.getUser()).orElse(null);
         if (user == null) {
@@ -115,6 +77,45 @@ public class CarInformationService {
 
         CarInformationDTO responseDTO = convertToDTO(savedCarInformation);
         return message.MessageResponse("Create new listings successfully", true, List.of(responseDTO));
+    }
+
+    private CarInformationDTO convertToDTO(car_information car) {
+        List<String> images = carImagesRepo.findByCar(car.getId())
+                .stream()
+                .map(car_images::getImage)
+                .collect(Collectors.toList());
+
+        CarInformationDTO carDTO = new CarInformationDTO();
+        carDTO.setId(car.getId());
+        carDTO.setUser(car.getF_user_id().getId());
+        carDTO.setYear_model(car.getYear_model());
+        carDTO.setMake(car.getMake());
+        carDTO.setModel(car.getModel());
+        carDTO.setDescription(car.getDescription());
+        carDTO.setStarting_bid(car.getStarting_bid());
+        carDTO.setCreated_at(car.getCreated_at());
+        carDTO.setStatus(car.isStatus());
+        carDTO.setStart_time(car.getStart_time());
+        carDTO.setEnd_time(car.getEnd_time());
+        carDTO.setVIN(car.getVIN());
+        carDTO.setMileage(car.getMileage());
+        carDTO.setInterial_color(car.getInterial_color());
+        carDTO.setExterior_color(car.getExterior_color());
+        carDTO.setEngine(car.getEngine());
+        carDTO.setDrive_type(car.getDrive_type());
+        carDTO.setBody_style(car.getBody_style());
+        carDTO.setDoors(car.getDoors());
+        carDTO.setCondition(car.getCondition());
+        carDTO.setPrice(car.getPrice());
+        carDTO.setLocation(car.getLocation());
+        carDTO.setTransmission(car.getTransmission());
+        carDTO.setFuel_type(car.getFuel_type());
+        carDTO.setModifications(car.getModifications());
+        carDTO.setFlaws(car.getFlaws());
+        carDTO.setEquipment(car.getEquipment());
+        carDTO.setImages(images);
+
+        return carDTO;
     }
 
     @Transactional
@@ -246,5 +247,10 @@ public class CarInformationService {
                 .collect(Collectors.toList());
 
         return message.MessageResponse("This is all ended car listings", true, carDTOs);
+    }
+
+    public boolean isCarOwner(Integer carId, Integer userId) {
+        car_information car = carInformationRepo.findById(carId).orElse(null);
+        return car != null && car.getF_user_id().getId() == userId;
     }
 }
