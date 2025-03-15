@@ -38,4 +38,9 @@ public class CarInformationController {
     public MessageFactory updateCarDetails(@PathVariable Integer id, @RequestBody CarInformationDTO carInformationDTO) {
         return carInformationService.updateCarDetails(id, carInformationDTO);
     }
+
+    @GetMapping("/account/listings")
+    public MessageFactory getListingsByUserId(@RequestParam("user_id") Integer userId) {
+        return carInformationService.getListingsByUserId(userId);
+    }
 }

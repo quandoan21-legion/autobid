@@ -253,4 +253,20 @@ public class CarInformationService {
         car_information car = carInformationRepo.findById(carId).orElse(null);
         return car != null && car.getF_user_id().getId() == userId;
     }
+
+
+    public MessageFactory getListingsByUserId(Integer userId) {
+        List<car_information> listings = carInformationRepo.findAllByUserId(userId);
+
+        if (listings.isEmpty()) {
+            return message.MessageResponse("No listings found for this user", false, List.of());
+        }
+
+        List<CarInformationDTO> listingDTOs = listings.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return message.MessageResponse("Listings retrieved successfully", true, listingDTOs);
+    }
+
 }
