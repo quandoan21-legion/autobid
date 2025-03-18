@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 
-
-
 @Service
 public class UserInformationService {
     MessageFactory message = new MessageFactory();
@@ -124,6 +122,9 @@ public class UserInformationService {
             if (updatedUser.getImage_url() != null) {
                 existingUser.setImage_url(updatedUser.getImage_url());
             }
+            if (updatedUser.getBio() != null) {
+                existingUser.setBio(updatedUser.getBio());
+            }
             if (updatedUser.getUsername() != null) {
                 existingUser.setUsername(updatedUser.getUsername());
             }
@@ -133,6 +134,7 @@ public class UserInformationService {
             return message.MessageResponse("User not found", false, List.of());
         }
     }
+
 
     public MessageFactory login(users users) throws NoSuchAlgorithmException {
         String username = users.getUsername();
