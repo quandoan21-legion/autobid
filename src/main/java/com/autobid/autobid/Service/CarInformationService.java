@@ -67,11 +67,11 @@ public class CarInformationService {
                     userInformationRepo.save(carOwner);
 
                     // Create a new order
-                    orders newOrder = new orders();
-                    newOrder.setUser_id(highestBid.getUser_id());
-                    newOrder.setAuction_id(listing.getId());
-                    newOrder.setOrder_date(new Date());
-                    newOrder.setTotal_amount(highestBid.getBid_amount());
+                    Orders newOrder = new Orders();
+                    newOrder.setUserId(highestBid.getUser_id());
+                    newOrder.setAuctionId(listing.getId());
+                    newOrder.setOrderDate(new Date());
+                    newOrder.setTotalAmount(highestBid.getBid_amount());
 
                     // Save the new order
                     orderService.saveOrder(newOrder);

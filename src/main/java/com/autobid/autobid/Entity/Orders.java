@@ -8,24 +8,20 @@ import java.util.Date;
 @Entity
 @Data
 @Table(name = "orders")
-public class orders {
+public class Orders {  // Correct class naming
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "user_id")
-    private int user_id;
+    private int userId;  // camelCase property
 
     @Column(name = "auction_id")
-    private int auction_id;
+    private int auctionId;
 
     @Column(name = "order_date")
-    private Date order_date;
+    private Date orderDate;
 
     @Column(name = "total_amount")
-    private double total_amount;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
-    private users f_user_id;
+    private double totalAmount;
 }
