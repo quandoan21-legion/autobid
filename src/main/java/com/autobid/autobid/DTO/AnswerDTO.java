@@ -2,6 +2,7 @@
 package com.autobid.autobid.DTO;
 
 import lombok.Data;
+
 import java.util.Date;
 
 @Data
@@ -11,4 +12,6 @@ public class AnswerDTO {
     private int commentId;
     private String answerText;
     private Date createdAt;
+    private String answererName;
+    private String answererImage;
 }

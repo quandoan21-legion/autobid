@@ -5,10 +5,12 @@ import com.autobid.autobid.DTO.AnswerDTO;
 import com.autobid.autobid.Entity.answers;
 import com.autobid.autobid.Entity.car_information;
 import com.autobid.autobid.Entity.comments;
+import com.autobid.autobid.Entity.users;
 import com.autobid.autobid.Factory.MessageFactory;
 import com.autobid.autobid.Repository.AnswerRepo;
 import com.autobid.autobid.Repository.CarInformationRepo;
 import com.autobid.autobid.Repository.CommentRepo;
+import com.autobid.autobid.Repository.UserInformationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
@@ -30,6 +32,10 @@ public class CommentService {
     @Lazy
     @Autowired
     private CarInformationService carInformationService;
+
+    @Autowired
+    private UserInformationRepo userInformationRepo;
+
     @Autowired
     private CarInformationRepo carInformationRepo;
 
@@ -110,6 +116,14 @@ public class CommentService {
         dto.setCommentText(comment.getComment_text());
         dto.setCreatedAt(comment.getCreated_at());
 
+        // Fetch user details
+        users user = userInformationRepo.findById(comment.getUser_id()).orElse(null);
+        if (user != null) {
+            dto.setCommenterName(user.getUsername()); // Set commenter's name
+            dto.setCommenterImage(user.getImage_url()); // Set commenter's image
+        }
+
+        // Fetch and set answer
         answers answer = answerRepo.findByCommentId(comment.getId()).orElse(null);
         if (answer != null) {
             dto.setAnswer(convertToAnswerDTO(answer));
@@ -125,6 +139,14 @@ public class CommentService {
         dto.setCommentId(answer.getCommentId());
         dto.setAnswerText(answer.getAnswer_text());
         dto.setCreatedAt(answer.getCreated_at());
+
+        // Fetch user details for the answerer
+        users answerer = userInformationRepo.findById(answer.getUser_id()).orElse(null);
+        if (answerer != null) {
+            dto.setAnswererName(answerer.getUsername()); // Set answerer's name
+            dto.setAnswererImage(answerer.getImage_url()); // Set answerer's image
+        }
+
         return dto;
     }
 

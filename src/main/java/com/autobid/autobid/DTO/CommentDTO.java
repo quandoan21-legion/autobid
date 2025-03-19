@@ -13,4 +13,6 @@ public class CommentDTO {
     private String commentText;
     private Date createdAt;
     private AnswerDTO answer;
+    private String commenterName;
+    private String commenterImage;
 }
