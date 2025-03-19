@@ -1,4 +1,3 @@
-// File: `src/main/java/com/autobid/autobid/DTO/CarInformationDTO.java`
 package com.autobid.autobid.DTO;
 
 import lombok.Data;
@@ -37,6 +36,7 @@ public class CarInformationDTO {
     private String flaws;
     private String equipment;
     private List<String> images; // Add this field to include images
+    private List<CommentDTO> comments; // Add this field to include comments
 
     // Getters and setters for all fields, including the new id field
     public Integer getId() {

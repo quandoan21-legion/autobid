@@ -2,14 +2,17 @@
 package com.autobid.autobid.Service;
 
 import com.autobid.autobid.DTO.CarInformationDTO;
+import com.autobid.autobid.DTO.CommentDTO;
 import com.autobid.autobid.Entity.car_images;
 import com.autobid.autobid.Entity.car_information;
 import com.autobid.autobid.Entity.users;
 import com.autobid.autobid.Factory.MessageFactory;
 import com.autobid.autobid.Repository.CarImagesRepo;
 import com.autobid.autobid.Repository.CarInformationRepo;
+import com.autobid.autobid.Repository.CommentRepo;
 import com.autobid.autobid.Repository.UserInformationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class CarInformationService {
+
+    @Autowired
+    @Lazy // Add this annotation
+    private CommentService commentService;
+
+    @Autowired
+    private CommentRepo commentRepo;
+
     @Autowired
     private CarInformationRepo carInformationRepo;
 
@@ -114,6 +125,8 @@ public class CarInformationService {
         carDTO.setFlaws(car.getFlaws());
         carDTO.setEquipment(car.getEquipment());
         carDTO.setImages(images);
+        List<CommentDTO> comments = commentService.getCommentsByCarId(car.getId()).getData();
+        carDTO.setComments(comments);
 
         return carDTO;
     }

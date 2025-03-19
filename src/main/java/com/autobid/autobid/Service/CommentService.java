@@ -10,6 +10,8 @@ import com.autobid.autobid.Repository.AnswerRepo;
 import com.autobid.autobid.Repository.CarInformationRepo;
 import com.autobid.autobid.Repository.CommentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +27,18 @@ public class CommentService {
     @Autowired
     private AnswerRepo answerRepo;
 
+    @Lazy
     @Autowired
     private CarInformationService carInformationService;
     @Autowired
     private CarInformationRepo carInformationRepo;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    private CarInformationService getCarInformationService() {
+        return applicationContext.getBean(CarInformationService.class);
+    }
 
     public boolean isCarOwner(Integer carId, Integer userId) {
         car_information car = carInformationRepo.findById(carId).orElse(null);
@@ -117,4 +127,5 @@ public class CommentService {
         dto.setCreatedAt(answer.getCreated_at());
         return dto;
     }
+
 }
