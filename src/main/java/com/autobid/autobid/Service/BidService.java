@@ -1,5 +1,6 @@
 package com.autobid.autobid.Service;
 
+import com.autobid.autobid.Entity.CarStatus;
 import com.autobid.autobid.Entity.bids;
 import com.autobid.autobid.Entity.car_information;
 import com.autobid.autobid.Entity.users;
@@ -34,6 +35,11 @@ public class BidService {
         car_information car = carInformationRepo.findById(carId).orElse(null);
         if (car == null) {
             return message.MessageResponse("Invalid car ID", false, List.of());
+        }
+
+        // Check if the car listing status is 'approved'
+        if (car.getStatus() != CarStatus.approved) {
+            return message.MessageResponse("Bids can only be placed on approved listings", false, List.of());
         }
 
         // Check if the bid is lower than the starting bid
@@ -95,7 +101,7 @@ public class BidService {
         car_information car = carInformationRepo.findById(carId).orElse(null);
         if (car != null) {
             // Update the car's price to the highest bid
-            car.setPrice((int)bidAmount);
+            car.setPrice((int) bidAmount);
             carInformationRepo.save(car);
         }
     }
