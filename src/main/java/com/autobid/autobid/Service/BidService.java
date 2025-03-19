@@ -78,7 +78,7 @@ public class BidService {
         // Update the car's price to the highest bid
         updateCarPrice(carId, bidAmount);
 
-        return message.MessageResponse("Bid placed successfully", true, List.of());
+        return message.MessageResponse("Bid placed successfully", true, List.of(newBidder));
     }
 
     private void refundBidder(bids bid) {
