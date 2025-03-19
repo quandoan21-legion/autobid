@@ -39,6 +39,9 @@ public class CarInformationDTO {
     private List<String> images;
     private List<CommentDTO> comments;
     private String admin_message; // Add this field
+    private String username; // User's username
+    private String email; // User's email
+    private String imageUrl;
 
     // Getters and setters for all fields
     public Integer getId() {

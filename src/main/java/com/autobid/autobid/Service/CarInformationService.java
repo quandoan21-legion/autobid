@@ -142,14 +142,14 @@ public class CarInformationService {
     }
 
     private CarInformationDTO convertToDTO(car_information car) {
-        List<String> images = carImagesRepo.findByCarId(car.getId())
-                .stream()
-                .map(car_images::getImage)
-                .collect(Collectors.toList());
-
         CarInformationDTO carDTO = new CarInformationDTO();
         carDTO.setId(car.getId());
-        carDTO.setUser(car.getF_user_id().getId());
+        carDTO.setUser(car.getF_user_id().getId()); // Set user ID
+        carDTO.setUsername(car.getF_user_id().getUsername()); // Set username
+        carDTO.setEmail(car.getF_user_id().getEmail()); // Set email
+        carDTO.setImageUrl(car.getF_user_id().getImage_url()); // Set image URL
+
+        // Set other fields...
         carDTO.setYear_model(car.getYear_model());
         carDTO.setMake(car.getMake());
         carDTO.setModel(car.getModel());
@@ -175,11 +175,20 @@ public class CarInformationService {
         carDTO.setModifications(car.getModifications());
         carDTO.setFlaws(car.getFlaws());
         carDTO.setEquipment(car.getEquipment());
-        carDTO.setImages(images);
-        List<CommentDTO> comments = commentService.getCommentsByCarId(car.getId()).getData();
 
-        carDTO.setAdmin_message(car.getAdmin_message());
+        // Set images
+        List<String> images = carImagesRepo.findByCarId(car.getId())
+                .stream()
+                .map(car_images::getImage)
+                .collect(Collectors.toList());
+        carDTO.setImages(images);
+
+        // Set comments
+        List<CommentDTO> comments = commentService.getCommentsByCarId(car.getId()).getData();
         carDTO.setComments(comments);
+
+        // Set admin message
+        carDTO.setAdmin_message(car.getAdmin_message());
 
         return carDTO;
     }
@@ -294,6 +303,7 @@ public class CarInformationService {
         CarInformationDTO responseDTO = convertToDTO(car_detail);
         return message.MessageResponse("This is your car detail", true, List.of(responseDTO));
     }
+
 
     public MessageFactory getAllCars() {
         Date currentDate = new Date();

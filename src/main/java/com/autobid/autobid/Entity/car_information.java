@@ -105,4 +105,5 @@ public class car_information {
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<car_images> images;
+
 }
