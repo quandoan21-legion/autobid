@@ -46,41 +46,43 @@ public class CarInformationService {
     @Scheduled(cron = "0 * * * * *") // Runs every 1 minute
     @Transactional
     public void checkExpiredListingsAndCreateOrders() {
-        System.out.println("Cron job running at: " + new Date());
-
         Date currentDate = new Date();
+
+        // Fetch all expired car listings that are not yet completed
         List<car_information> expiredListings = carInformationRepo.findAllByEndTimeBeforeOrEqualAndStatusNotCompleted(currentDate);
 
-        System.out.println("Expired listings found: " + expiredListings.size());
-
         for (car_information listing : expiredListings) {
-            System.out.println("Processing listing ID: " + listing.getId());
-
+            // Get the highest bidder for the listing
             Optional<bids> highestBidOpt = bidsRepo.findHighestBidByAuctionId(listing.getId());
 
             if (highestBidOpt.isPresent()) {
                 bids highestBid = highestBidOpt.get();
-                System.out.println("Highest bid found for listing ID " + listing.getId() + ": " + highestBid.getBid_amount());
 
-                // Create a new order
-                orders newOrder = new orders();
-                newOrder.setUser_id(highestBid.getUser_id());
-                newOrder.setAuction_id(listing.getId());
-                newOrder.setOrder_date(new Date());
-                newOrder.setTotal_amount(highestBid.getBid_amount());
+                // Transfer the highest bid amount to the car owner
+                users carOwner = listing.getF_user_id();
 
-                // Save the new order
-                orderService.saveOrder(newOrder);
-                System.out.println("Order created for listing ID: " + listing.getId());
+                if (carOwner != null) {
+                    // Add the bid amount to the car owner's balance
+                    carOwner.setBalance(carOwner.getBalance() + highestBid.getBid_amount());
+                    userInformationRepo.save(carOwner);
 
-                // Update the listing status to 'completed'
-                if (CarStatus.completed != null) {
-                    System.out.println("Setting status to: " + CarStatus.completed);
+                    // Create a new order
+                    orders newOrder = new orders();
+                    newOrder.setUser_id(highestBid.getUser_id());
+                    newOrder.setAuction_id(listing.getId());
+                    newOrder.setOrder_date(new Date());
+                    newOrder.setTotal_amount(highestBid.getBid_amount());
+
+                    // Save the new order
+                    orderService.saveOrder(newOrder);
+                    System.out.println("Order created for listing ID: " + listing.getId());
+
+                    // Update the listing status to 'completed'
                     listing.setStatus(CarStatus.completed);
                     carInformationRepo.save(listing);
                     System.out.println("Listing status updated to 'completed' for ID: " + listing.getId());
                 } else {
-                    System.out.println("Invalid status value: completed");
+                    System.out.println("Car owner not found for listing ID: " + listing.getId());
                 }
             } else {
                 System.out.println("No bids found for listing ID: " + listing.getId());
