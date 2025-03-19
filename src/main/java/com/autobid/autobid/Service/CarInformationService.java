@@ -4,22 +4,18 @@ package com.autobid.autobid.Service;
 import com.autobid.autobid.DTO.AdminReviewRequest;
 import com.autobid.autobid.DTO.CarInformationDTO;
 import com.autobid.autobid.DTO.CommentDTO;
-import com.autobid.autobid.Entity.CarStatus;
-import com.autobid.autobid.Entity.car_images;
-import com.autobid.autobid.Entity.car_information;
-import com.autobid.autobid.Entity.users;
+import com.autobid.autobid.Entity.*;
 import com.autobid.autobid.Factory.MessageFactory;
-import com.autobid.autobid.Repository.CarImagesRepo;
-import com.autobid.autobid.Repository.CarInformationRepo;
-import com.autobid.autobid.Repository.CommentRepo;
-import com.autobid.autobid.Repository.UserInformationRepo;
+import com.autobid.autobid.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +36,57 @@ public class CarInformationService {
 
     @Autowired
     private UserInformationRepo userInformationRepo;
+
+    @Autowired
+    private BidsRepo bidsRepo;
+
+    @Autowired
+    private OrderService orderService; // Assuming you have an OrderService to handle orders
+
+    @Scheduled(cron = "0 * * * * *") // Runs every 1 minute
+    @Transactional
+    public void checkExpiredListingsAndCreateOrders() {
+        System.out.println("Cron job running at: " + new Date());
+
+        Date currentDate = new Date();
+        List<car_information> expiredListings = carInformationRepo.findAllByEndTimeBeforeOrEqualAndStatusNotCompleted(currentDate);
+
+        System.out.println("Expired listings found: " + expiredListings.size());
+
+        for (car_information listing : expiredListings) {
+            System.out.println("Processing listing ID: " + listing.getId());
+
+            Optional<bids> highestBidOpt = bidsRepo.findHighestBidByAuctionId(listing.getId());
+
+            if (highestBidOpt.isPresent()) {
+                bids highestBid = highestBidOpt.get();
+                System.out.println("Highest bid found for listing ID " + listing.getId() + ": " + highestBid.getBid_amount());
+
+                // Create a new order
+                orders newOrder = new orders();
+                newOrder.setUser_id(highestBid.getUser_id());
+                newOrder.setAuction_id(listing.getId());
+                newOrder.setOrder_date(new Date());
+                newOrder.setTotal_amount(highestBid.getBid_amount());
+
+                // Save the new order
+                orderService.saveOrder(newOrder);
+                System.out.println("Order created for listing ID: " + listing.getId());
+
+                // Update the listing status to 'completed'
+                if (CarStatus.completed != null) {
+                    System.out.println("Setting status to: " + CarStatus.completed);
+                    listing.setStatus(CarStatus.completed);
+                    carInformationRepo.save(listing);
+                    System.out.println("Listing status updated to 'completed' for ID: " + listing.getId());
+                } else {
+                    System.out.println("Invalid status value: completed");
+                }
+            } else {
+                System.out.println("No bids found for listing ID: " + listing.getId());
+            }
+        }
+    }
 
     private final MessageFactory message = new MessageFactory();
 

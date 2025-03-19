@@ -37,7 +37,7 @@ public class car_information {
 
     // Change status to an enum
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", columnDefinition = "ENUM('in_progress', 'approved', 'rejected')")
+    @Column(name = "status", columnDefinition = "ENUM('in_progress', 'approved', 'rejected', 'completed')")
     private CarStatus status;
 
     @Column(name = "start_time")

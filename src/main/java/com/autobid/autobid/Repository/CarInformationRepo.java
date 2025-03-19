@@ -20,5 +20,8 @@ public interface CarInformationRepo extends JpaRepository<car_information, Integ
     @Query("SELECT c FROM car_information c WHERE c.f_user_id.id = :userId")
     List<car_information> findAllByUserId(@Param("userId") Integer userId);
 
-     Optional<car_information> findById(Integer id); // Ensure this method exists
+    Optional<car_information> findById(Integer id); // Ensure this method exists
+
+    @Query("SELECT c FROM car_information c WHERE c.end_time <= :currentDate AND c.status != 'completed'")
+    List<car_information> findAllByEndTimeBeforeOrEqualAndStatusNotCompleted(Date currentDate);
 }
