@@ -1,33 +1,28 @@
 // File: `src/main/java/com/autobid/autobid/Service/CarInformationService.java`
 package com.autobid.autobid.Service;
 
-import com.autobid.autobid.DTO.AdminReviewRequest;
 import com.autobid.autobid.DTO.CarInformationDTO;
-import com.autobid.autobid.DTO.CommentDTO;
-import com.autobid.autobid.Entity.*;
+import com.autobid.autobid.Entity.car_images;
+import com.autobid.autobid.Entity.car_information;
+import com.autobid.autobid.Entity.users;
 import com.autobid.autobid.Factory.MessageFactory;
-import com.autobid.autobid.Repository.*;
+import com.autobid.autobid.Repository.CarImagesRepo;
+import com.autobid.autobid.Repository.CarInformationRepo;
+import com.autobid.autobid.Repository.UserInformationRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class CarInformationService {
-
-    @Autowired
-    @Lazy // Add this annotation
-    private CommentService commentService;
-
-    @Autowired
-    private CommentRepo commentRepo;
-
+    private static final Logger log = LoggerFactory.getLogger(CarInformationService.class);
     @Autowired
     private CarInformationRepo carInformationRepo;
 
@@ -36,57 +31,6 @@ public class CarInformationService {
 
     @Autowired
     private UserInformationRepo userInformationRepo;
-
-    @Autowired
-    private BidsRepo bidsRepo;
-
-    @Autowired
-    private OrderService orderService; // Assuming you have an OrderService to handle orders
-
-    @Scheduled(cron = "0 * * * * *") // Runs every 1 minute
-    @Transactional
-    public void checkExpiredListingsAndCreateOrders() {
-        System.out.println("Cron job running at: " + new Date());
-
-        Date currentDate = new Date();
-        List<car_information> expiredListings = carInformationRepo.findAllByEndTimeBeforeOrEqualAndStatusNotCompleted(currentDate);
-
-        System.out.println("Expired listings found: " + expiredListings.size());
-
-        for (car_information listing : expiredListings) {
-            System.out.println("Processing listing ID: " + listing.getId());
-
-            Optional<bids> highestBidOpt = bidsRepo.findHighestBidByAuctionId(listing.getId());
-
-            if (highestBidOpt.isPresent()) {
-                bids highestBid = highestBidOpt.get();
-                System.out.println("Highest bid found for listing ID " + listing.getId() + ": " + highestBid.getBid_amount());
-
-                // Create a new order
-                orders newOrder = new orders();
-                newOrder.setUser_id(highestBid.getUser_id());
-                newOrder.setAuction_id(listing.getId());
-                newOrder.setOrder_date(new Date());
-                newOrder.setTotal_amount(highestBid.getBid_amount());
-
-                // Save the new order
-                orderService.saveOrder(newOrder);
-                System.out.println("Order created for listing ID: " + listing.getId());
-
-                // Update the listing status to 'completed'
-                if (CarStatus.completed != null) {
-                    System.out.println("Setting status to: " + CarStatus.completed);
-                    listing.setStatus(CarStatus.completed);
-                    carInformationRepo.save(listing);
-                    System.out.println("Listing status updated to 'completed' for ID: " + listing.getId());
-                } else {
-                    System.out.println("Invalid status value: completed");
-                }
-            } else {
-                System.out.println("No bids found for listing ID: " + listing.getId());
-            }
-        }
-    }
 
     private final MessageFactory message = new MessageFactory();
 
@@ -105,7 +49,7 @@ public class CarInformationService {
         carInformation.setDescription(carInformationDTO.getDescription());
         carInformation.setStarting_bid(carInformationDTO.getStarting_bid());
         carInformation.setCreated_at(new Date());
-        carInformation.setStatus(CarStatus.in_progress);
+        carInformation.setStatus(carInformationDTO.isStatus());
         carInformation.setStart_time(carInformationDTO.getStart_time());
         carInformation.setEnd_time(carInformationDTO.getEnd_time());
         carInformation.setVIN(carInformationDTO.getVIN());
@@ -124,25 +68,23 @@ public class CarInformationService {
         carInformation.setModifications(carInformationDTO.getModifications());
         carInformation.setFlaws(carInformationDTO.getFlaws());
         carInformation.setEquipment(carInformationDTO.getEquipment());
-
         car_information savedCarInformation = carInformationRepo.save(carInformation);
 
         if (carInformationDTO.getImages() != null) {
             for (String imageUrl : carInformationDTO.getImages()) {
                 car_images carImage = new car_images();
-                carImage.setCarId(savedCarInformation.getId());
+                carImage.setCar(savedCarInformation.getId());
                 carImage.setImage(imageUrl);
                 carImagesRepo.save(carImage);
             }
         }
-
 
         CarInformationDTO responseDTO = convertToDTO(savedCarInformation);
         return message.MessageResponse("Create new listings successfully", true, List.of(responseDTO));
     }
 
     private CarInformationDTO convertToDTO(car_information car) {
-        List<String> images = carImagesRepo.findByCarId(car.getId())
+        List<String> images = carImagesRepo.findByCar(car.getId())
                 .stream()
                 .map(car_images::getImage)
                 .collect(Collectors.toList());
@@ -156,7 +98,7 @@ public class CarInformationService {
         carDTO.setDescription(car.getDescription());
         carDTO.setStarting_bid(car.getStarting_bid());
         carDTO.setCreated_at(car.getCreated_at());
-        carDTO.setStatus(car.getStatus());
+        carDTO.setStatus(car.isStatus());
         carDTO.setStart_time(car.getStart_time());
         carDTO.setEnd_time(car.getEnd_time());
         carDTO.setVIN(car.getVIN());
@@ -176,10 +118,6 @@ public class CarInformationService {
         carDTO.setFlaws(car.getFlaws());
         carDTO.setEquipment(car.getEquipment());
         carDTO.setImages(images);
-        List<CommentDTO> comments = commentService.getCommentsByCarId(car.getId()).getData();
-
-        carDTO.setAdmin_message(car.getAdmin_message());
-        carDTO.setComments(comments);
 
         return carDTO;
     }
@@ -212,9 +150,7 @@ public class CarInformationService {
         if (carInformationDTO.getCreated_at() != null) {
             carInformation.setCreated_at(carInformationDTO.getCreated_at());
         }
-        if (carInformationDTO.getStatus() != null) {
-            carInformation.setStatus(carInformationDTO.getStatus());
-        }
+        carInformation.setStatus(carInformationDTO.isStatus());
         if (carInformationDTO.getStart_time() != null) {
             carInformation.setStart_time(carInformationDTO.getStart_time());
         }
@@ -271,11 +207,11 @@ public class CarInformationService {
         }
         if (carInformationDTO.getImages() != null) {
             // Delete existing images in a transaction
-            carImagesRepo.deleteByCarId(carInformation.getId());
+            carImagesRepo.deleteByCar(carInformation.getId());
             // Save new images
             for (String imageUrl : carInformationDTO.getImages()) {
                 car_images carImage = new car_images();
-                carImage.setCarId(carInformation.getId());
+                carImage.setCar(carInformation.getId());
                 carImage.setImage(imageUrl);
                 carImagesRepo.save(carImage);
             }
@@ -296,14 +232,19 @@ public class CarInformationService {
     }
 
     public MessageFactory getAllCars() {
-        Date currentDate = new Date();
-        List<car_information> cars = carInformationRepo.findAllByEndTimeAfter(currentDate);
+        try{
+            Date currentDate = new Date();
+            List<car_information> cars = carInformationRepo.findAllByEndTimeAfter(currentDate);
 
-        List<CarInformationDTO> carDTOs = cars.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+            List<CarInformationDTO> carDTOs = cars.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
 
-        return message.MessageResponse("This is all car listings", true, carDTOs);
+            return message.MessageResponse("This is all car listings", true, carDTOs);
+        }catch (Exception e){
+            log.info(e.getMessage());
+        }
+        return null;
     }
 
     public MessageFactory getEndedCars() {
@@ -322,45 +263,35 @@ public class CarInformationService {
         return car != null && car.getF_user_id().getId() == userId;
     }
 
-
-    public MessageFactory getListingsByUserId(Integer userId) {
-        List<car_information> listings = carInformationRepo.findAllByUserId(userId);
-
-        if (listings.isEmpty()) {
-            return message.MessageResponse("No listings found for this user", false, List.of());
+    public MessageFactory addListingToUserWatchList(Integer listing_id, Integer user_id){
+        car_information car = carInformationRepo.findById(listing_id).orElse(null);
+        if(Objects.isNull(car)){
+            message.MessageResponse("listing id is invalid", true, null);
         }
-
-        List<CarInformationDTO> listingDTOs = listings.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-
-        return message.MessageResponse("Listings retrieved successfully", true, listingDTOs);
-    }
-
-    @Transactional
-    public MessageFactory adminReviewCar(Integer carId, AdminReviewRequest adminReviewRequest) {
-        // Fetch the admin user
-        users admin = userInformationRepo.findById(adminReviewRequest.getAdmin_id()).orElse(null);
-        if (admin == null || !admin.isAdmin()) {
-            return message.MessageResponse("Only admins can review cars", false, List.of());
+        users users = userInformationRepo.findById(user_id).orElse(null);
+        if(Objects.isNull(users)){
+            message.MessageResponse("user id is invalid", true, null);
         }
-
-        // Fetch the car
-        car_information car = carInformationRepo.findById(carId).orElse(null);
-        if (car == null) {
-            return message.MessageResponse("Car not found", false, List.of());
-        }
-
-        // Update the car status and admin message
-        car.setStatus(adminReviewRequest.getStatus());
-        car.setAdmin_message(adminReviewRequest.getAdmin_message());
+        car.setF_user_id(users);
         carInformationRepo.save(car);
-
-        // Convert the updated car to DTO
-        CarInformationDTO responseDTO = convertToDTO(car);
-
-        return message.MessageResponse("Car review successful", true, List.of(responseDTO));
+        return message.MessageResponse("listing added successfully", true, null);
+    }
+    public MessageFactory removeListingToUserWatchList(Integer listing_id){
+        car_information car = carInformationRepo.findById(listing_id).orElse(null);
+        if(Objects.isNull(car)){
+            message.MessageResponse("listing id is invalid", true, null);
+        }
+        car.setF_user_id(null);
+        carInformationRepo.save(car);
+        return message.MessageResponse("listing remove from user successfully", true, null);
+    }
+    public MessageFactory getCarInProgressByUserId(Integer userId){
+        List<car_information> cars = carInformationRepo.findInProgressCarByUserId(userId);
+        return message.MessageResponse("Get in progress car by user id successfully", true, cars);
+    }
+    public MessageFactory getCarByUserId(Integer userId){
+        List<car_information> cars = carInformationRepo.findByUserId(userId);
+        return message.MessageResponse("Get car by user id successfully", true, cars);
     }
 
 }
-

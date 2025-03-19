@@ -1,7 +1,6 @@
 // File: src/main/java/com/autobid/autobid/Controller/CarInformationController.java
 package com.autobid.autobid.Controller;
 
-import com.autobid.autobid.DTO.AdminReviewRequest;
 import com.autobid.autobid.DTO.CarInformationDTO;
 import com.autobid.autobid.Factory.MessageFactory;
 import com.autobid.autobid.Service.CarInformationService;
@@ -40,15 +39,20 @@ public class CarInformationController {
         return carInformationService.updateCarDetails(id, carInformationDTO);
     }
 
-    @GetMapping("/account/listings")
-    public MessageFactory getListingsByUserId(@RequestParam("user_id") Integer userId) {
-        return carInformationService.getListingsByUserId(userId);
+    @PostMapping("/listings/add-watchlist/{listing_id}")
+    public  MessageFactory addListingToUserWatchList(@PathVariable Integer listing_id, @RequestHeader Integer user_id) {
+        return carInformationService.addListingToUserWatchList(listing_id, user_id);
     }
-
-    @PutMapping("/admin/review-car/{carId}")
-    public MessageFactory adminReviewCar(
-            @PathVariable Integer carId,
-            @RequestBody AdminReviewRequest adminReviewRequest) {
-        return carInformationService.adminReviewCar(carId, adminReviewRequest);
+    @DeleteMapping("/listings/remove-watchlist/{listing_id}")
+    public  MessageFactory removeListingToUserWatchList(@PathVariable Integer listing_id) {
+        return carInformationService.removeListingToUserWatchList(listing_id);
+    }
+    @GetMapping("/account/listings/in-progress")
+    public  MessageFactory getCarInProgressByUserId(@RequestHeader Integer user_id) {
+        return carInformationService.getCarInProgressByUserId(user_id);
+    }
+    @GetMapping("/account/watch-list")
+    public  MessageFactory getCarByUserId(@RequestHeader Integer user_id) {
+        return carInformationService.getCarByUserId(user_id);
     }
 }
