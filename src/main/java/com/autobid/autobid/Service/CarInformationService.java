@@ -129,6 +129,7 @@ public class CarInformationService {
         carDTO.setEquipment(car.getEquipment());
         carDTO.setImages(images);
         List<CommentDTO> comments = commentService.getCommentsByCarId(car.getId()).getData();
+
         carDTO.setAdmin_message(car.getAdmin_message());
         carDTO.setComments(comments);
 

@@ -88,7 +88,7 @@ public class UserInformationService {
         transaction.setAmount(amount);
         transactionRepo.save(transaction);
 
-        return new MessageFactory().MessageResponse("Withdrawal successful", true, List.of());
+        return new MessageFactory().MessageResponse("Withdrawal successful", true, List.of(user));
     }
 
     @Transactional
@@ -109,7 +109,7 @@ public class UserInformationService {
         transaction.setAmount(amount);
         transactionRepo.save(transaction);
 
-        return new MessageFactory().MessageResponse("Deposit successful", true, List.of());
+        return new MessageFactory().MessageResponse("Deposit successful", true, List.of(user));
     }
 
 
