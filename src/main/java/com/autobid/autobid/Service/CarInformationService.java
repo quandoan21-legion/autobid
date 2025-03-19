@@ -3,6 +3,7 @@ package com.autobid.autobid.Service;
 
 import com.autobid.autobid.DTO.CarInformationDTO;
 import com.autobid.autobid.DTO.CommentDTO;
+import com.autobid.autobid.Entity.CarStatus;
 import com.autobid.autobid.Entity.car_images;
 import com.autobid.autobid.Entity.car_information;
 import com.autobid.autobid.Entity.users;
@@ -56,7 +57,7 @@ public class CarInformationService {
         carInformation.setDescription(carInformationDTO.getDescription());
         carInformation.setStarting_bid(carInformationDTO.getStarting_bid());
         carInformation.setCreated_at(new Date());
-        carInformation.setStatus(carInformationDTO.isStatus());
+        carInformation.setStatus(CarStatus.in_progress);
         carInformation.setStart_time(carInformationDTO.getStart_time());
         carInformation.setEnd_time(carInformationDTO.getEnd_time());
         carInformation.setVIN(carInformationDTO.getVIN());
@@ -75,9 +76,10 @@ public class CarInformationService {
         carInformation.setModifications(carInformationDTO.getModifications());
         carInformation.setFlaws(carInformationDTO.getFlaws());
         carInformation.setEquipment(carInformationDTO.getEquipment());
+
         car_information savedCarInformation = carInformationRepo.save(carInformation);
 
-          if (carInformationDTO.getImages() != null) {
+        if (carInformationDTO.getImages() != null) {
             for (String imageUrl : carInformationDTO.getImages()) {
                 car_images carImage = new car_images();
                 carImage.setCarId(savedCarInformation.getId());
@@ -106,7 +108,7 @@ public class CarInformationService {
         carDTO.setDescription(car.getDescription());
         carDTO.setStarting_bid(car.getStarting_bid());
         carDTO.setCreated_at(car.getCreated_at());
-        carDTO.setStatus(car.isStatus());
+        carDTO.setStatus(car.getStatus());
         carDTO.setStart_time(car.getStart_time());
         carDTO.setEnd_time(car.getEnd_time());
         carDTO.setVIN(car.getVIN());
@@ -127,6 +129,7 @@ public class CarInformationService {
         carDTO.setEquipment(car.getEquipment());
         carDTO.setImages(images);
         List<CommentDTO> comments = commentService.getCommentsByCarId(car.getId()).getData();
+        carDTO.setAdmin_message(car.getAdmin_message());
         carDTO.setComments(comments);
 
         return carDTO;
@@ -160,7 +163,9 @@ public class CarInformationService {
         if (carInformationDTO.getCreated_at() != null) {
             carInformation.setCreated_at(carInformationDTO.getCreated_at());
         }
-        carInformation.setStatus(carInformationDTO.isStatus());
+        if (carInformationDTO.getStatus() != null) {
+            carInformation.setStatus(carInformationDTO.getStatus());
+        }
         if (carInformationDTO.getStart_time() != null) {
             carInformation.setStart_time(carInformationDTO.getStart_time());
         }

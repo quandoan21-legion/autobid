@@ -1,5 +1,6 @@
 package com.autobid.autobid.DTO;
 
+import com.autobid.autobid.Entity.CarStatus;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,7 +16,7 @@ public class CarInformationDTO {
     private String description;
     private Integer starting_bid;
     private Date created_at;
-    private boolean status;
+    private CarStatus status; // Change to enum
     private Date start_time;
     private Date end_time;
     private Integer user_id;
@@ -35,10 +36,11 @@ public class CarInformationDTO {
     private String modifications;
     private String flaws;
     private String equipment;
-    private List<String> images; // Add this field to include images
-    private List<CommentDTO> comments; // Add this field to include comments
+    private List<String> images;
+    private List<CommentDTO> comments;
+    private String admin_message; // Add this field
 
-    // Getters and setters for all fields, including the new id field
+    // Getters and setters for all fields
     public Integer getId() {
         return id;
     }

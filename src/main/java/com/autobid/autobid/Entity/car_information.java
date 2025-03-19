@@ -35,8 +35,10 @@ public class car_information {
     @Temporal(TemporalType.TIMESTAMP)
     private Date created_at;
 
-    @Column(name = "status", columnDefinition = "boolean default false")
-    private boolean status;
+    // Change status to an enum
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", columnDefinition = "ENUM('in_progress', 'approved', 'rejected')")
+    private CarStatus status;
 
     @Column(name = "start_time")
     @Temporal(TemporalType.TIMESTAMP)
@@ -97,6 +99,9 @@ public class car_information {
 
     @Column(name = "modifications")
     private String modifications;
+
+    @Column(name = "admin_message")
+    private String admin_message;
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<car_images> images;
