@@ -1,6 +1,7 @@
 // File: `src/main/java/com/autobid/autobid/Service/CarInformationService.java`
 package com.autobid.autobid.Service;
 
+import com.autobid.autobid.DTO.AdminReviewRequest;
 import com.autobid.autobid.DTO.CarInformationDTO;
 import com.autobid.autobid.DTO.CommentDTO;
 import com.autobid.autobid.Entity.CarStatus;
@@ -289,4 +290,30 @@ public class CarInformationService {
         return message.MessageResponse("Listings retrieved successfully", true, listingDTOs);
     }
 
+    @Transactional
+    public MessageFactory adminReviewCar(Integer carId, AdminReviewRequest adminReviewRequest) {
+        // Fetch the admin user
+        users admin = userInformationRepo.findById(adminReviewRequest.getAdmin_id()).orElse(null);
+        if (admin == null || !admin.isAdmin()) {
+            return message.MessageResponse("Only admins can review cars", false, List.of());
+        }
+
+        // Fetch the car
+        car_information car = carInformationRepo.findById(carId).orElse(null);
+        if (car == null) {
+            return message.MessageResponse("Car not found", false, List.of());
+        }
+
+        // Update the car status and admin message
+        car.setStatus(adminReviewRequest.getStatus());
+        car.setAdmin_message(adminReviewRequest.getAdmin_message());
+        carInformationRepo.save(car);
+
+        // Convert the updated car to DTO
+        CarInformationDTO responseDTO = convertToDTO(car);
+
+        return message.MessageResponse("Car review successful", true, List.of(responseDTO));
+    }
+
 }
+
