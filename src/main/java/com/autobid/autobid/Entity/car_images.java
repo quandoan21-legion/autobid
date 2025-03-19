@@ -11,8 +11,14 @@ public class car_images {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @Column(name = "car")
-    private int car;
+
+    @ManyToOne
+    @JoinColumn(name = "car_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private car_information car;
+
+    @Column(name = "car_id")
+    private int carId;
+
     @Column(name = "image")
     private String image;
 }

@@ -77,21 +77,22 @@ public class CarInformationService {
         carInformation.setEquipment(carInformationDTO.getEquipment());
         car_information savedCarInformation = carInformationRepo.save(carInformation);
 
-        if (carInformationDTO.getImages() != null) {
+          if (carInformationDTO.getImages() != null) {
             for (String imageUrl : carInformationDTO.getImages()) {
                 car_images carImage = new car_images();
-                carImage.setCar(savedCarInformation.getId());
+                carImage.setCarId(savedCarInformation.getId());
                 carImage.setImage(imageUrl);
                 carImagesRepo.save(carImage);
             }
         }
+
 
         CarInformationDTO responseDTO = convertToDTO(savedCarInformation);
         return message.MessageResponse("Create new listings successfully", true, List.of(responseDTO));
     }
 
     private CarInformationDTO convertToDTO(car_information car) {
-        List<String> images = carImagesRepo.findByCar(car.getId())
+        List<String> images = carImagesRepo.findByCarId(car.getId())
                 .stream()
                 .map(car_images::getImage)
                 .collect(Collectors.toList());
@@ -216,11 +217,11 @@ public class CarInformationService {
         }
         if (carInformationDTO.getImages() != null) {
             // Delete existing images in a transaction
-            carImagesRepo.deleteByCar(carInformation.getId());
+            carImagesRepo.deleteByCarId(carInformation.getId());
             // Save new images
             for (String imageUrl : carInformationDTO.getImages()) {
                 car_images carImage = new car_images();
-                carImage.setCar(carInformation.getId());
+                carImage.setCarId(carInformation.getId());
                 carImage.setImage(imageUrl);
                 carImagesRepo.save(carImage);
             }

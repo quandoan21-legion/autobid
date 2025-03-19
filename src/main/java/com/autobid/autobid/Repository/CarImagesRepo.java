@@ -1,19 +1,19 @@
-// File: src/main/java/com/autobid/autobid/Repository/CarImagesRepo.java
-    package com.autobid.autobid.Repository;
+package com.autobid.autobid.Repository;
 
-    import com.autobid.autobid.Entity.car_images;
-    import org.springframework.data.jpa.repository.JpaRepository;
-    import org.springframework.data.jpa.repository.Modifying;
-    import org.springframework.data.jpa.repository.Query;
-    import org.springframework.stereotype.Repository;
-    import java.util.List;
+import com.autobid.autobid.Entity.car_images;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-    @Repository
-    public interface CarImagesRepo extends JpaRepository<car_images, Integer> {
+import java.util.List;
 
-        @Modifying
-        @Query("DELETE FROM car_images c WHERE c.car = ?1")
-        void deleteByCar(Integer carId);
+@Repository
+public interface CarImagesRepo extends JpaRepository<car_images, Integer> {
 
-        List<car_images> findByCar(int carId);
-    }
+    @Modifying
+    @Query("DELETE FROM car_images c WHERE c.carId = ?1")
+    void deleteByCarId(Integer carId);
+
+    List<car_images> findByCarId(int carId);
+}

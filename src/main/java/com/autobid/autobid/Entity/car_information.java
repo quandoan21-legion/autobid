@@ -1,4 +1,3 @@
-// File: src/main/java/com/autobid/autobid/Entity/car_information.java
 package com.autobid.autobid.Entity;
 
 import jakarta.persistence.*;
@@ -99,4 +98,6 @@ public class car_information {
     @Column(name = "modifications")
     private String modifications;
 
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<car_images> images;
 }
