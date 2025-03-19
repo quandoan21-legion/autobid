@@ -1,4 +1,3 @@
-// File: `src/main/java/com/autobid/autobid/Repository/TransactionRepository.java`
 package com.autobid.autobid.Repository;
 
 import com.autobid.autobid.Entity.Transaction;

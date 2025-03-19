@@ -1,4 +1,3 @@
-// File: `src/main/java/com/autobid/autobid/Entity/Transaction.java`
 package com.autobid.autobid.Entity;
 
 import jakarta.persistence.*;
@@ -13,8 +12,12 @@ public class Transaction {
     @Column(name = "id")
     private int id;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private users user;
+
     @Column(name = "user_id")
-    private int userId;
+    private int userId; // Correct field name
 
     @Column(name = "transaction_type")
     private String transactionType;

@@ -8,6 +8,7 @@ import com.autobid.autobid.Repository.TransactionRepo;
 import com.autobid.autobid.Repository.UserInformationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -22,9 +23,10 @@ public class UserInformationService {
     MessageFactory message = new MessageFactory();
 
     @Autowired
-    private TransactionRepo transactionRepo;
-    @Autowired
     private UserInformationRepo userInformationRepo;
+
+    @Autowired
+    private TransactionRepo transactionRepo;
 
     protected String hashedPassword(String passoword) throws NoSuchAlgorithmException {
         // Get the MessageDigest instance for SHA-256
@@ -64,48 +66,50 @@ public class UserInformationService {
         return message.MessageResponse("User created", true, List.of(userInformationRepo.save(users)));
     }
 
+    @Transactional
     public MessageFactory withdraw(Integer userId, double amount) {
-        if (amount <= 0) {
-            return message.MessageResponse("Amount must be greater than 0", false, List.of());
+        Optional<users> userOptional = userInformationRepo.findById(userId);
+        if (userOptional.isEmpty()) {
+            return new MessageFactory().MessageResponse("User not found", false, List.of());
         }
 
-        users user = userInformationRepo.findById(userId).orElse(null);
-        if (user != null && user.getBalance() >= amount) {
-            user.deductBalance(amount);
-            userInformationRepo.save(user);
-
-            Transaction transaction = new Transaction();
-            transaction.setUserId(userId);
-            transaction.setTransactionType("withdraw");
-            transaction.setAmount(amount);
-            transactionRepo.save(transaction);
-
-            return message.MessageResponse("Withdrawal successful", true, List.of(user));
-        } else {
-            return message.MessageResponse("Insufficient balance or user not found", false, List.of());
+        users user = userOptional.get();
+        if (user.getBalance() < amount) {
+            return new MessageFactory().MessageResponse("Insufficient balance", false, List.of());
         }
+
+        user.setBalance(user.getBalance() - amount);
+        userInformationRepo.save(user);
+
+        // Create and save a transaction record
+        Transaction transaction = new Transaction();
+        transaction.setUserId(userId);
+        transaction.setTransactionType("WITHDRAW");
+        transaction.setAmount(amount);
+        transactionRepo.save(transaction);
+
+        return new MessageFactory().MessageResponse("Withdrawal successful", true, List.of());
     }
 
+    @Transactional
     public MessageFactory deposit(Integer userId, double amount) {
-        if (amount <= 0) {
-            return message.MessageResponse("Amount must be greater than 0", false, List.of());
+        Optional<users> userOptional = userInformationRepo.findById(userId);
+        if (userOptional.isEmpty()) {
+            return new MessageFactory().MessageResponse("User not found", false, List.of());
         }
 
-        users user = userInformationRepo.findById(userId).orElse(null);
-        if (user != null) {
-            user.setBalance(user.getBalance() + amount);
-            userInformationRepo.save(user);
+        users user = userOptional.get();
+        user.setBalance(user.getBalance() + amount);
+        userInformationRepo.save(user);
 
-            Transaction transaction = new Transaction();
-            transaction.setUserId(userId);
-            transaction.setTransactionType("deposit");
-            transaction.setAmount(amount);
-            transactionRepo.save(transaction);
+        // Create and save a transaction record
+        Transaction transaction = new Transaction();
+        transaction.setUserId(userId);
+        transaction.setTransactionType("DEPOSIT");
+        transaction.setAmount(amount);
+        transactionRepo.save(transaction);
 
-            return message.MessageResponse("Deposit successful", true, List.of(user));
-        } else {
-            return message.MessageResponse("User not found", false, List.of());
-        }
+        return new MessageFactory().MessageResponse("Deposit successful", true, List.of());
     }
 
 
