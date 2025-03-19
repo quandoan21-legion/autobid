@@ -2,11 +2,15 @@ package com.autobid.autobid.Controller;
 
 import com.autobid.autobid.Entity.users;
 import com.autobid.autobid.Factory.MessageFactory;
+import com.autobid.autobid.Repository.UserInformationRepo;
 import com.autobid.autobid.Service.UserInformationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Optional;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class UserInformationController {
@@ -24,7 +28,7 @@ public class UserInformationController {
     }
 
     @GetMapping("/account")
-    public MessageFactory GetAccountInformation(@RequestParam("user_id") Integer user_id){
+    public MessageFactory GetAccountInformation(@RequestParam("user_id") Integer user_id) {
         return userInformationService.getAccountInformation(user_id);
     }
 
@@ -34,12 +38,30 @@ public class UserInformationController {
     }
 
     @PostMapping("/login")
-    public  MessageFactory Login(@RequestBody users users) throws  NoSuchAlgorithmException {
+    public MessageFactory Login(@RequestBody users users) throws NoSuchAlgorithmException {
         return userInformationService.login(users);
     }
 
     @PutMapping("/update-account")
-    public MessageFactory UpdateAccount(@RequestBody users users) throws  NoSuchAlgorithmException{
+    public MessageFactory UpdateAccount(@RequestBody users users) throws NoSuchAlgorithmException {
         return userInformationService.editAccountInformation(users);
     }
+
+    @Autowired
+    private UserInformationRepo userInformationRepo;
+
+    @GetMapping("/admin/users")
+    public MessageFactory getAllUsers(@RequestParam("admin_id") Integer adminId) {
+        // Check if the user is an admin
+        Optional<users> adminOpt = userInformationRepo.findById(adminId);
+        if (adminOpt.isEmpty() || !adminOpt.get().isAdmin()) {
+            return new MessageFactory().MessageResponse("Only admins can access this endpoint", false, List.of());
+        }
+
+        // Fetch all users
+        List<users> allUsers = userInformationRepo.findAll();
+
+        return new MessageFactory().MessageResponse("All users retrieved successfully", true, allUsers);
+    }
+
 }

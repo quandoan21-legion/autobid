@@ -45,6 +45,9 @@ public class users {
         this.balance -= amount;
     }
 
+    public boolean isAdmin() {
+        return admin;
+    }
 //    @OneToMany(mappedBy = "f_user_id", fetch = FetchType.EAGER)
 //    private List<car_information> carInformationList;
 }
