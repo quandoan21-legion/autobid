@@ -7,6 +7,7 @@ import com.autobid.autobid.Entity.car_information;
 import com.autobid.autobid.Factory.MessageFactory;
 import com.autobid.autobid.Repository.CarInformationRepo;
 import com.autobid.autobid.Repository.OrderRepo;
+import com.autobid.autobid.Service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +21,8 @@ import java.util.stream.Collectors;
 public class OrderController {
     @Autowired
     private OrderRepo orderRepo;
-
+    @Autowired
+    private OrderService orderService;
     @Autowired
     private CarInformationRepo carInformationRepo;
 
@@ -42,5 +44,10 @@ public class OrderController {
                 .collect(Collectors.toList());
 
         return new MessageFactory().MessageResponse("Orders retrieved successfully", true, orderDTOs);
+    }
+
+    @GetMapping("/admin/orders")
+    public MessageFactory getAllOrders(@RequestParam("admin_id") Integer adminId) {
+        return orderService.getAllOrders(adminId);
     }
 }

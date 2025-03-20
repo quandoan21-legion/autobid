@@ -24,4 +24,13 @@ public class Orders {  // Correct class naming
 
     @Column(name = "total_amount")
     private double totalAmount;
+
+    @Column(name = "commission")
+    private double commission;
+
+    @PrePersist
+    @PreUpdate
+    public void calculateCommission() {
+        this.commission = this.totalAmount * 0.02; // 2% commission
+    }
 }
