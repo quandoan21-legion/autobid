@@ -111,9 +111,10 @@ public class UserInformationService {
         // Hash and set new password
         String hashedNewPassword = this.hashedPassword(request.getNew_password());
         user.setPassword(hashedNewPassword);
-        userInformationRepo.save(user);
+        users updatedUser = userInformationRepo.save(user);
 
-        return message.MessageResponse("Password changed successfully", true, List.of());
+        // Return the updated user information
+        return message.MessageResponse("Password changed successfully", true, List.of(updatedUser));
     }
 
     @Transactional
