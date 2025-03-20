@@ -1,6 +1,7 @@
 package com.autobid.autobid.Service;
 
 
+import com.autobid.autobid.DTO.ChangePasswordRequestDTO;
 import com.autobid.autobid.Entity.Transaction;
 import com.autobid.autobid.Entity.users;
 import com.autobid.autobid.Factory.MessageFactory;
@@ -89,6 +90,30 @@ public class UserInformationService {
         transactionRepo.save(transaction);
 
         return new MessageFactory().MessageResponse("Withdrawal successful", true, List.of(user));
+    }
+
+    // In UserInformationService.java
+    public MessageFactory changePassword(ChangePasswordRequestDTO request) throws NoSuchAlgorithmException {
+        Optional<users> userOptional = userInformationRepo.findById(request.getId());
+
+        if (userOptional.isEmpty()) {
+            return message.MessageResponse("User not found", false, List.of());
+        }
+
+        users user = userOptional.get();
+        String hashedCurrentPassword = this.hashedPassword(request.getCurrent_password());
+
+        // Check if current password matches
+        if (!user.getPassword().equals(hashedCurrentPassword)) {
+            return message.MessageResponse("Current password is incorrect", false, List.of());
+        }
+
+        // Hash and set new password
+        String hashedNewPassword = this.hashedPassword(request.getNew_password());
+        user.setPassword(hashedNewPassword);
+        userInformationRepo.save(user);
+
+        return message.MessageResponse("Password changed successfully", true, List.of());
     }
 
     @Transactional

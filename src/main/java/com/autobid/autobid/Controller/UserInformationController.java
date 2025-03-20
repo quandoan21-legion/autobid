@@ -1,5 +1,6 @@
 package com.autobid.autobid.Controller;
 
+import com.autobid.autobid.DTO.ChangePasswordRequestDTO;
 import com.autobid.autobid.Entity.users;
 import com.autobid.autobid.Factory.MessageFactory;
 import com.autobid.autobid.Repository.UserInformationRepo;
@@ -62,6 +63,12 @@ public class UserInformationController {
         List<users> allUsers = userInformationRepo.findAll();
 
         return new MessageFactory().MessageResponse("All users retrieved successfully", true, allUsers);
+    }
+
+    // In UserInformationController.java
+    @PostMapping("/account/change-password")
+    public MessageFactory changePassword(@RequestBody ChangePasswordRequestDTO request) throws NoSuchAlgorithmException {
+        return userInformationService.changePassword(request);
     }
 
 }
